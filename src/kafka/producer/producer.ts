@@ -1,15 +1,6 @@
 // producer.ts
 import { Kafka } from 'kafkajs';
 
-// import { Kafka } from "kafkajs";
-
-
-
-// export interface RestaurantCreatedEvent {
-// //   id: string;
-//   name: string;
-// //   createdBy: string; // admin or sub-admin
-// }
 
 export async function notifyRestaurantCreated(
   kafka: Kafka,

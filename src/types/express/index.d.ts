@@ -1,4 +1,4 @@
-import { UserJwtPayload } from '../../models/common';
+import { UserJwtPayload } from '../../models/common.js';
 
 declare namespace Express {
   export interface Request {
