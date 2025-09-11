@@ -2,3 +2,4 @@ node_modules
 
 # crendentials
 .env
+.data

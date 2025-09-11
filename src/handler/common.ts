@@ -18,9 +18,6 @@ export const testReq = async (req: Request, res: Response) => {
     method: req.method,
     path: req.path
   });
-
-  
-
   console.log(req)
   
   res.status(200).json({ message: "Request logged successfully" });
@@ -61,7 +58,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const fetchAllrestaurants = async (req : Request , res :Response)=>{
 
-  
+
   try{
      const results = await db
       .select({
