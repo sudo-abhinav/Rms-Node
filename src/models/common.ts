@@ -7,3 +7,4 @@ import { JWT_SECRET, JWT_EXPIRES_IN } from '../utils/jwt';
         role: string;
         createdAt : Date
     }
+

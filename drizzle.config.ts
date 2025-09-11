@@ -1,19 +1,34 @@
-    // drizzle.config.js
     import 'dotenv/config';
     import { defineConfig } from 'drizzle-kit';
+    import dotenv from "dotenv"
 
-    export default defineConfig({
-      out: './drizzle', // Directory for migrations
-      schema: './src/db/schema', // Path to your Drizzle schema definitions
-      dialect: 'postgresql', // or 'mysql'
-      dbCredentials: {
-        // url: process.env.DATABASE_URL,
-        host:"127.0.0.1",
-        password:"rmspwd",
-        port:5436,
-        user:"rms",
-        database:"rms",
-        ssl: false
-      },
-    });
+    dotenv.config()
 
+   type DbConfig  = {
+  host  :string;
+  database : string;
+  user : string;
+  password :string;
+  port : number;
+  ssl : boolean
+}
+
+
+const dbCreds: DbConfig = {
+  host: process.env.DB_HOST || '',         // Required, with fallback
+  database: process.env.DB_DATABASE || '', // Required, with fallback
+  user: process.env.DB_USER || '',         // Optional, with fallback
+  password: process.env.DB_PASSWORD || '', // Optional, with fallback
+  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
+  ssl: process.env.DB_SSL === 'true',      // Ensure boolean
+};
+if (!process.env.DB_HOST || !process.env.DB_DATABASE) {
+  throw new Error('Environment variables DB_HOST and DB_DATABASE are required');
+}
+
+export default defineConfig({
+  out: './drizzle',
+  schema: './src/db/schema',
+  dialect: 'postgresql',
+  dbCredentials:dbCreds
+});
