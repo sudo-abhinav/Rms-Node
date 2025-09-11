@@ -14,8 +14,6 @@ import { Kafka } from "kafkajs";
 const kafkaInit = new Kafka({clientId : 'rma-producer' , brokers: ['localhost:9092']})
 
 export const login = async (req: Request, res: Response) => {
-
-  
   const { useremail, password } = req.body;
   try {
     const [result] = await db
