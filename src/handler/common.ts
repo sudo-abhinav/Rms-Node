@@ -58,7 +58,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const fetchAllrestaurants = async (req : Request , res :Response)=>{
 
-
+  
   try{
      const results = await db
       .select({
@@ -83,4 +83,3 @@ export const fetchAllrestaurants = async (req : Request , res :Response)=>{
     });
   }
   }
-
