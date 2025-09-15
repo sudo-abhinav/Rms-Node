@@ -1,11 +1,11 @@
 import { PgDoublePrecision } from "drizzle-orm/pg-core";
-
+import {roleEnum} from '../../db/export'
 // Interface for request body
 export interface RestaurantBody {
   name: string;
   address: string;
-  latitude: string; // Received as string; validated & converted
-  longitude: string; // Received as string; validated & converted
+  latitude: number; // Received as string; validated & converted
+  longitude: number; // Received as string; validated & converted
   createdBy: string; // User ID (UUID) as string
 }
 
@@ -32,3 +32,16 @@ export interface DishesBody{
   name :string,
   price : number,
 }
+
+export interface userInfo{
+  id : string;
+  password :string;
+  email : string;
+  role : string   | null;
+  createdAt  :Date
+}
+  //  id: number;
+  //   password: string;
+  //   email: string;
+  //   role: string;
+  //   createdAt: Date;

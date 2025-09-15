@@ -7,21 +7,17 @@ import { generateJwtToken } from "../../utils/jwt";
 import { AuthenticatedRequest } from "../../middleware/authMiddleware";
 import { error } from "console";
 import { restaurants } from "../../db/schema/restaurants";
-import { DishesBody, RestaurantBody, restaurantList, RestaurantResult } from "../../models/admin/admin";
+import { DishesBody, RestaurantBody, restaurantList, RestaurantResult, userInfo } from "../../models/admin/admin";
 import { dishes } from "../../db/schema/dishes";
 import { notifyRestaurantCreated } from "../../kafka/producer/producer";
 import { Kafka } from "kafkajs";
+import { createRestaurantService,checkRestaurantExists , getUserByEmail } from "../../services/admin/adminService";
 const kafkaInit = new Kafka({clientId : 'rma-producer' , brokers: ['localhost:9092']})
 
-export const login = async (req: Request, res: Response) => {
+export const loginv2 = async (req: Request, res: Response) => {
   const { useremail, password } = req.body;
   try {
-    const [result] = await db
-      .select({ id : users.id ,  password: users.password , email : users.email  , role : users.role , createdAt : users.createdAt})
-      .from(users)
-      .where(eq(users.email, useremail));
-
-    //   .where(and(eq(users.email, useremail)));
+    const result: userInfo  = await getUserByEmail(useremail);
 
     console.log(result);
    
@@ -51,7 +47,7 @@ export const login = async (req: Request, res: Response) => {
 
 
 
-export const createRestaurant = async (req: AuthenticatedRequest, res: Response) => {
+export const createRestaurant = async (req: AuthenticatedRequest & Request , res: Response) => {
 
   
 
@@ -85,37 +81,20 @@ export const createRestaurant = async (req: AuthenticatedRequest, res: Response)
 
   // Attempt to insert restaurant
   try {
-    // ading existing check 
-     const existing = await db
-      .select()
-      .from(restaurants)
-      .where(
-        eq(restaurants.name, name)
-        && eq(restaurants.address, address)
-      )
-      .limit(1);
+    if (!req.user) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
 
-    if (existing.length > 0) {
+    const existing = await checkRestaurantExists(name, address);
+
+    if (existing) {
       return res.status(409).json({
         message: "A restaurant with this name and address already exists."
       });
     }
 
+    const result = await createRestaurantService(name,address, latitude , longitude , req.user.id)
 
-      const [result] = await db.insert(restaurants).values({
-       name,
-       address,
-       latitude : Number(latitude),
-       longitude :  Number(longitude),
-       createdBy
-    }).returning({
-        id : restaurants.id,
-        name: restaurants.name,
-        address: restaurants.address,
-        latitude: restaurants.latitude,
-        longitude: restaurants.longitude,
-        createdBy: restaurants.createdBy,
-      });
 
       await notifyRestaurantCreated(kafkaInit ,result.name )
 
