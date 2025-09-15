@@ -3,7 +3,6 @@ import express, { Response } from "express";
 import { AuthenticatedRequest, authMiddleware } from "../../middleware/authMiddleware";
 import { shouldHaveRole } from "../../middleware/middleware";
 import { signUpUser } from "../../handler/users/user";
-import { log } from "console";
 import { fetchAllrestaurants, login } from "../../handler/common";
 
 export const userRoute = express.Router();
@@ -12,7 +11,7 @@ export const userRoute = express.Router();
 userRoute.post("/signup", signUpUser);
 
 
-userRoute.post("/signin", authMiddleware , shouldHaveRole(['user']) , login )
+userRoute.post("/signin", login )
 
 
 userRoute.get("/restaurant" , authMiddleware , shouldHaveRole(['user']) , fetchAllrestaurants)

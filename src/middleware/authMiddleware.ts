@@ -9,7 +9,7 @@ import * as httpContext from 'express-http-context';
 
 
 export interface AuthenticatedRequest extends Request {
-  user: UserJwtPayload;
+  user?: UserJwtPayload;
 }
 
 // export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -35,7 +35,7 @@ export interface AuthenticatedRequest extends Request {
 // };
 
 export const authMiddleware = async (
-  req: AuthenticatedRequest,res: Response, next: NextFunction) => {
+  req: AuthenticatedRequest , res: Response, next: NextFunction) => {
   try {
     // Extract token from Authorization header (format: "Bearer <token>")
     const token = req.headers.authorization?.split(' ')[1];

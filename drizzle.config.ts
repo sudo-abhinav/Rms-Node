@@ -19,9 +19,10 @@ const dbCreds: DbConfig = {
   database: process.env.DB_DATABASE || '', // Required, with fallback
   user: process.env.DB_USER || '',         // Optional, with fallback
   password: process.env.DB_PASSWORD || '', // Optional, with fallback
-  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
+  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5436,
   ssl: process.env.DB_SSL === 'true',      // Ensure boolean
 };
+console.log(dbCreds)
 if (!process.env.DB_HOST || !process.env.DB_DATABASE) {
   throw new Error('Environment variables DB_HOST and DB_DATABASE are required');
 }

@@ -5,6 +5,7 @@ import { users } from "../../db/schema/user";
 import { userSignup } from "../../models/users/users";
 import { hashPassword } from "../../utils/hasing";
 import { verifyEmail } from "../../utils/emailVerfier";
+import { isAcceptablePassword, isNonEmptyString, isValidEmail } from "../../utils/common";
 
 
 
@@ -34,16 +35,16 @@ export const signUpUser = async (req: Request, res: Response) => {
   if (errors.length > 0) {
     return res.status(400).json({ message: "Validation failed.", errors });
   }
-  const result = await verifyEmail(email);
-if (result.value) {
-    console.log('Email is valid', result);
-} else {
-   return res.status(400).json({
-      message: "enter valid email",
-      error: result.error
-    })
-    console.log('Email is invalid:', result.error);
-}
+//   const result = await verifyEmail(email);
+// if (result.value) {
+//     console.log('Email is valid', result);
+// } else {
+//   console.log('Email is invalid:', result.error);
+//    return res.status(400).json({
+//       message: "enter valid email",
+//       error: result.error
+//     })
+// }
 
   try {
     // Check if user already exists

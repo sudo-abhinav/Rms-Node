@@ -14,7 +14,7 @@ import { Kafka } from "kafkajs";
 import { createRestaurantService,checkRestaurantExists , getUserByEmail } from "../../services/admin/adminService";
 const kafkaInit = new Kafka({clientId : 'rma-producer' , brokers: ['localhost:9092']})
 
-export const login = async (req: Request, res: Response) => {
+export const loginv2 = async (req: Request, res: Response) => {
   const { useremail, password } = req.body;
   try {
     const result: userInfo  = await getUserByEmail(useremail);
@@ -81,6 +81,9 @@ export const createRestaurant = async (req: AuthenticatedRequest & Request , res
 
   // Attempt to insert restaurant
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
 
     const existing = await checkRestaurantExists(name, address);
 
