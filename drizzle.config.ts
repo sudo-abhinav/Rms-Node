@@ -16,7 +16,7 @@
 
 const dbCreds: DbConfig = {
   host: process.env.DB_HOST || '',         // Required, with fallback
-  database: process.env.DB_DATABASE || '', // Required, with fallback
+  database: process.env.DB_DATABASE || 'rms', // Required, with fallback
   user: process.env.DB_USER || '',         // Optional, with fallback
   password: process.env.DB_PASSWORD || '', // Optional, with fallback
   port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5436,
