@@ -1,6 +1,5 @@
 import { isNull } from "drizzle-orm";
 import {
-  AnyPgColumn,
   boolean,
   pgTable,
   text,
@@ -19,7 +18,6 @@ export const users = pgTable(
     password: text("password").notNull(),
     role: roleEnum("role").default("user"),
     adminApproved: boolean("admin_approved").default(false),
-    // createdBy: uuid("created_by").references((): AnyPgColumn => users.id),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
     archivedAt: timestamp("archived_at", { withTimezone: true }),
   },

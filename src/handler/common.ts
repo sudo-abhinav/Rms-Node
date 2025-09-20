@@ -9,19 +9,7 @@ import { restaurantList, RestaurantWithDishes } from "../models/admin/admin";
 // import { AuthenticatedRequest } from "../middleware/authMiddleware";
 import { dishes } from "../db/export";
 
-export const testReq = async (req: Request, res: Response) => {
-  console.log({
-    body: req.body,
-    params: req.params,
-    query: req.query,
-    headers: req.headers,
-    method: req.method,
-    path: req.path,
-  });
-  console.log(req);
 
-  res.status(200).json({ message: "Request logged successfully" });
-};
 
 export const login = async (req: Request, res: Response) => {
   const { useremail, password } = req.body;
@@ -55,7 +43,7 @@ export const login = async (req: Request, res: Response) => {
       return;
     }
 
-    if (result.password.length > 0 && success && jwtToken) {
+    if (success && jwtToken) {
       res.status(200).json({ message: "Login successful", token: jwtToken });
     } else {
       res.status(401).json({ message: "Invalid credentials" });

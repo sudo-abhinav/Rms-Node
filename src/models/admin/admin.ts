@@ -5,7 +5,7 @@ export interface RestaurantBody {
   address: string;
   latitude: number; // Received as string; validated & converted
   longitude: number; // Received as string; validated & converted // Received as string; validated & converted
-  createdBy: string; // User ID (UUID) as string
+  // createdBy: string; // User ID (UUID) as string
 }
 
 // Interface for returned restaurant (without archived_at and id)
@@ -26,7 +26,7 @@ export interface restaurantList{
   createdBy: string | null;
 }
 
-export interface DishesBody{
+export interface DishReq{
   restaurantId : string,
   name :string,
   price : number,

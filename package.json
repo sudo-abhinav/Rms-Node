@@ -11,7 +11,8 @@
     "docker:down": "docker compose down",
     "migration:generate": "drizzle-kit generate",
     "migration:drop": "drizzle-kit drop",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -28,19 +29,24 @@
     "express": "^5.1.0",
     "express-http-context": "^2.0.1",
     "express-rate-limit": "^8.1.0",
+    "express-winston": "^4.2.0",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^7.0.6",
     "pg": "^8.16.3",
-    "tsx": "^4.20.5"
+    "tsx": "^4.20.5",
+    "winston": "^3.17.0",
+    "zod": "^4.1.9"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
+    "@types/express-winston": "^4.0.2",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.3.0",
     "@types/pg": "^8.15.5",
+    "@types/winston": "^2.4.4",
     "eslint": "^9.35.0",
     "globals": "^16.4.0",
     "jiti": "^2.5.1",

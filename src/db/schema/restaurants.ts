@@ -1,7 +1,7 @@
 import { isNull } from 'drizzle-orm';
 import { uniqueIndex } from 'drizzle-orm/pg-core';
 import { users } from './user';
-import { pgTable, uuid, varchar,doublePrecision, text, timestamp, index , pgEnum, AnyPgColumn } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, doublePrecision, text, timestamp,  AnyPgColumn } from 'drizzle-orm/pg-core';
 
 
 

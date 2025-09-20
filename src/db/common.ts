@@ -1,4 +1,4 @@
-import { DrizzleError, eq } from 'drizzle-orm';
+import {  eq } from 'drizzle-orm';
 import { db } from './connection';
 import { users } from './schema/user';
 
