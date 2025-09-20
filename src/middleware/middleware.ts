@@ -1,5 +1,7 @@
  import { Request, Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from './authMiddleware';
+import expressWinston from "express-winston";
+import logger from "../utils/logger";
 
  export type Role = 'admin' | 'sub-admin' | 'user'; // Adjust as needed
 
@@ -31,3 +33,13 @@ export const shouldHaveRole = (requiredRoles: Role[]) => {
     next();
   };
 };
+
+
+
+export const requestLogger = expressWinston.logger({
+  winstonInstance: logger,
+  meta: false,
+  msg: "HTTP {{req.method}} {{req.url}}",
+  expressFormat: true,
+  colorize: false,
+});

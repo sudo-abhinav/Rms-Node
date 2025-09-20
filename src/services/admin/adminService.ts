@@ -26,7 +26,7 @@ export const getUserByEmail = async (useremail: string): Promise<userInfo> => {
             role: result.role,
             createdAt: result.createdAt || new Date()
         };
-    } catch (error) {
+    } catch{
         throw new Error('Failed to fetch user by email');
     }
 };
