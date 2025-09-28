@@ -5,3 +5,10 @@
         createdAt : Date
     }
 
+export interface CreateAddressRequest {
+  street: string;
+  latitude: number;
+  longitude: number;
+  restaurantId?: string;
+  userId?: string;
+}

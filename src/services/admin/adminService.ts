@@ -1,4 +1,4 @@
-import {db ,users , restaurants } from '../../db/export'
+import {db ,users , restaurants ,  address } from '../../db/export'
 import { eq } from 'drizzle-orm';
 import { userInfo } from '../../models/admin/admin';
 
@@ -31,40 +31,36 @@ export const getUserByEmail = async (useremail: string): Promise<userInfo> => {
     }
 };
 
-export const checkRestaurantExists = async (name: string, address: string) => {
-    const existing = await db
-        .select()
-        .from(restaurants)
-        .where(
-            eq(restaurants.name, name)
-            && eq(restaurants.address, address)
-        )
-        .limit(1);
-    return existing.length > 0;
-};
+
 
 export const createRestaurantService = async (
     name: string,
-    address: string,
-    latitude: number,
-    longitude: number,
     createdBy: string
 ) => {
     const [result] = await db.insert(restaurants)
         .values({
             name ,
-            address,
-            latitude,
-            longitude,
             createdBy: createdBy.toString()
         })
         .returning({
             id: restaurants.id,
             name: restaurants.name,
-            address: restaurants.address,
-            latitude: restaurants.latitude,
-            longitude: restaurants.longitude,
             createdBy: restaurants.createdBy,
         });
     return result;
 };
+
+export async function fetchRestaurantsByUserId(userId: string) {
+  return await db
+    .select({
+      id: restaurants.id,
+      name: restaurants.name,
+      address: address.street,
+      latitude: address.latitude,
+      longitude: address.longitude,
+      createdBy: restaurants.createdBy,
+    })
+    .from(restaurants)
+    .leftJoin(address, eq(address.restaurantId, restaurants.id))
+    .where(eq(restaurants.createdBy, userId));
+}

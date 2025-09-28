@@ -1,11 +1,11 @@
 import { pgTable, uuid, text, doublePrecision, timestamp, uniqueIndex, AnyPgColumn } from 'drizzle-orm/pg-core';
-import { users } from './user';
+// import { users } from './user';
 import { isNull } from 'drizzle-orm';
-import { restaurants } from './restaurants';
+import { restaurants , users } from '../export';
 
 
 export const address = pgTable('address', {
-    id: uuid('addrresId').defaultRandom().primaryKey(),
+    id: uuid('id').defaultRandom().primaryKey(),
     street: text('address').notNull(),
     latitude: doublePrecision('latitude').notNull(),
     longitude: doublePrecision('longitude').notNull(),

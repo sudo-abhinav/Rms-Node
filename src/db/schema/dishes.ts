@@ -15,5 +15,5 @@ export const dishes = pgTable('dishes', {
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
     archivedAt: timestamp('archived_at', { withTimezone: true }),},
         (dishes)=>[
-            uniqueIndex("dises_idx").on(dishes.name, dishes.restaurant_id).where(isNull(dishes.archivedAt))
+            uniqueIndex("dishes_idx").on(dishes.name, dishes.restaurant_id).where(isNull(dishes.archivedAt))
         ])

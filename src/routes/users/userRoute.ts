@@ -1,9 +1,9 @@
 import express, { Response } from "express";
 
 import { AuthenticatedRequest, authMiddleware } from "../../middleware/authMiddleware";
-import { shouldHaveRole } from "../../middleware/middleware";
+// import { shouldHaveRole } from "../../middleware/middleware";
 import { signUpUser } from "../../handler/users/user";
-import { fetchAllrestaurants, fetchAllrestaurantsWithDishes , login } from "../../handler/common";
+import {  fetchAllrestaurantsWithDishes , login } from "../../handler/common";
 // import { fetchAllrestaurants, login } from "../../handler/common";
 
 export const userRoute = express.Router();
@@ -16,7 +16,7 @@ userRoute.post("/signin", login )
 // userRoute.post("/signin", login )
 
 
-userRoute.get("/restaurant" , authMiddleware , shouldHaveRole(['user']) , fetchAllrestaurants)
+// userRoute.get("/restaurant" , authMiddleware , shouldHaveRole(['user']) , fetchAllrestaurants)
 
 userRoute.get("/resturantWithDish",authMiddleware ,fetchAllrestaurantsWithDishes)
 

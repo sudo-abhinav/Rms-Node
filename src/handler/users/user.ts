@@ -2,39 +2,35 @@ import { eq } from "drizzle-orm";
 import { Request, Response } from "express";
 import { db } from "../../db/connection";
 import { users } from "../../db/schema/user";
-import { userSignup } from "../../models/users/users";
 import { hashPassword } from "../../utils/hasing";
-import { verifyEmail } from "../../utils/emailVerfier";
-import { isAcceptablePassword, isNonEmptyString, isValidEmail } from "../../utils/common";
+// import { verifyEmail } from "../../utils/emailVerfier";
+import { userSignupSchema } from "../../validator/validator";
 
 
 
 
 export const signUpUser = async (req: Request, res: Response) => {  
-  let body: unknown;
-  try {
-    body = req.body;
-  } catch (err) {
-    return res.status(400).json({
-      message: "Invalid request body.",
-      error: "Request body must be JSON."
-    });
-  }
+let body: unknown;
+try {
+  body = req.body;
+} catch {
+  return res.status(400).json({
+    message: "Invalid request body.",
+    error: "Request body must be JSON.",
+  });
+}
 
-  const { name, email, password } = body as userSignup;
-  const errors: string[] = [];
+const parsed = userSignupSchema.safeParse(body);
 
-  // Field-by-field validation
-  if (!isNonEmptyString(name)) errors.push("Name is required and must be a non-empty string.");
-  if (!isNonEmptyString(email)) errors.push("Email is required and must be a non-empty string.");
-  if (!isValidEmail(email)) errors.push("Email must be a valid email address.");
-  if (!isNonEmptyString(password)) errors.push("Password is required and must be a non-empty string.");
-  if (!isAcceptablePassword(password)) errors.push("Password must be at least 6 characters long.");
+if (!parsed.success) {
+  return res.status(400).json({
+    message: "Validation failed.",
+    errors: parsed.error.issues.map(err => err.message),
+  });
+}
 
-  // If validation errors exist, reject immediately
-  if (errors.length > 0) {
-    return res.status(400).json({ message: "Validation failed.", errors });
-  }
+// const { name, email, role, password } = parsed.data;
+
 //   const result = await verifyEmail(email);
 // if (result.value) {
 //     console.log('Email is valid', result);
@@ -48,18 +44,19 @@ export const signUpUser = async (req: Request, res: Response) => {
 
   try {
     // Check if user already exists
-    const existing = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    const existing = await db.select().from(users).where(eq(users.email, parsed.data.email)).limit(1);
     if (existing.length > 0) {
       return res.status(409).json({ message: "A user with this email already exists." });
     }
 
     // Hash the password
-    const hashedPassword = await hashPassword(password);
+    const hashedPassword = await hashPassword(parsed.data.password);
 
     // Insert the new user
     await db.insert(users).values({
-      name,
-      email,
+      name : parsed.data.name,
+      email: parsed.data.email,
+      role : parsed.data.role,
       password: hashedPassword,
     });
 

@@ -1,0 +1,2 @@
+ALTER TABLE "address" ADD COLUMN "restaurantId" uuid;--> statement-breakpoint
+ALTER TABLE "address" ADD CONSTRAINT "address_restaurantId_restaurants_id_fk" FOREIGN KEY ("restaurantId") REFERENCES "public"."restaurants"("id") ON DELETE no action ON UPDATE no action;

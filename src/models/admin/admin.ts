@@ -2,18 +2,16 @@
 // Interface for request body
 export interface RestaurantBody {
   name: string;
-  address: string;
-  latitude: number; // Received as string; validated & converted
-  longitude: number; // Received as string; validated & converted // Received as string; validated & converted
+  // address: string;
+  // latitude: number; // Received as string; validated & converted
+  // longitude: number; // Received as string; validated & converted // Received as string; validated & converted
   // createdBy: string; // User ID (UUID) as string
 }
 
 // Interface for returned restaurant (without archived_at and id)
 export interface RestaurantResult {
+  id :string;
   name: string;
-  address: string;
-  latitude: number;
-  longitude: number;
   createdBy: string;
 }
 

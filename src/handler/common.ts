@@ -7,12 +7,16 @@ import { generateJwtToken } from "../utils/jwt";
 import { restaurants } from "../db/schema/restaurants";
 import { restaurantList, RestaurantWithDishes } from "../models/admin/admin";
 // import { AuthenticatedRequest } from "../middleware/authMiddleware";
-import { dishes } from "../db/export";
+import { address, dishes } from "../db/export";
+import logger from "../utils/logger";
+import { AuthenticatedRequest } from "../middleware/authMiddleware";
+import { fetchRestaurantsByUserId } from "../services/admin/adminService";
 
 
 
 export const login = async (req: Request, res: Response) => {
   const { useremail, password } = req.body;
+  logger.info(`user email ${useremail} and ${password}`)
   try {
     const [result] = await db
       .select({
@@ -23,8 +27,13 @@ export const login = async (req: Request, res: Response) => {
         createdAt: users.createdAt,
       })
       .from(users)
-      .where(eq(users.email, useremail));
-    console.log(result);
+       .where((
+      eq(users.email, useremail),
+      eq(users.adminApproved, true)
+    )
+  );
+
+    console.log(result.password , result.password );
 
     const success = await verifyHashPassword(password, result.password);
 
@@ -55,18 +64,14 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const fetchAllrestaurants = async (req : Request, res : Response) => {
+export const fetchAllrestaurantsWithRole = async (req : AuthenticatedRequest, res : Response) => {
   try {
-    const results = await db
-      .select({
-        id: restaurants.id,
-        name: restaurants.name,
-        address: restaurants.address,
-        latitude: restaurants.latitude,
-        longitude: restaurants.longitude,
-        createdBy: restaurants.createdBy,
-      })
-      .from(restaurants);
+
+      if (!req.user?.id) {
+        // TODO this is just for remove error in eq because in authrequest id is string 
+      return res.status(401).json({ message: "Unauthorized: user id missing" });
+    }
+    const results = await fetchRestaurantsByUserId(req.user.id)
 
     return res.status(200).json({
       message: "restaurant.",
@@ -81,63 +86,6 @@ export const fetchAllrestaurants = async (req : Request, res : Response) => {
   }
 };
 
-// export const fetchAllrestaurantsWithDishes = async (
-//   req: Request,
-//   res: Response
-// ) => {
-//   try {
-//     const results = await db
-//       .select({
-//         id: restaurants.id,
-//         name: restaurants.name,
-//         address: restaurants.address,
-//         latitude: restaurants.latitude,
-//         longitude: restaurants.longitude,
-//         dishId: dishes.id,
-//         dishName: dishes.name,
-//         price: dishes.price,
-//       })
-//       .from(restaurants)
-//       .leftJoin(dishes, eq(dishes.restaurant_id, restaurants.id));
-
-//     // Group dishes by restaurant
-//     const grouped = results.reduce((acc, row) => {
-//       if (!row.id) return acc; // edge case if left outer join has nulls
-//       let restaurant = acc.find((r) => r.id === row.id);
-//       if (!restaurant) {
-//         restaurant = {
-//           id: row.id,
-//           name: row.name,
-//           address: row.address,
-//           latitude: row.latitude,
-//           longitude: row.longitude,
-//           dishes: [],
-//         };
-//         acc.push(restaurant);
-//       }
-//       // Only add if dish exists
-//       if (row.id != null && row.name != null && row.price != null) {
-//         restaurant.dishes.push({
-//           dishId : row.dishId,
-//           name: row.dishName,
-//           price: row.price,
-//         });
-//       }
-//       return acc;
-//     }, [] as RestaurantWithDishes[]);
-
-//     return res.status(200).json({
-//       message: "Restaurants and dishes",
-//       restaurants: grouped,
-//     });
-//   } catch (error) {
-//     console.error("Failed to fetch restaurants:", error);
-//     res.status(500).json({
-//       message: "Failed to retrieve restaurants.",
-//       error: error instanceof Error ? error.message : "Unknown error",
-//     });
-//   }
-// };
 
 export const fetchAllrestaurantsWithDishes = async (
   req: Request,
@@ -148,41 +96,46 @@ export const fetchAllrestaurantsWithDishes = async (
       .select({
         id: restaurants.id,
         name: restaurants.name,
-        address: restaurants.address,
-        latitude: restaurants.latitude,
-        longitude: restaurants.longitude,
+        address: address.street,
+        latitude: address.latitude,
+        longitude: address.longitude,
         dishId: dishes.id,
         dishName: dishes.name,
         price: dishes.price,
       })
-      .from(restaurants)
+      .from(restaurants).leftJoin(address, eq(address.restaurantId, restaurants.id))
       .leftJoin(dishes, eq(dishes.restaurant_id, restaurants.id));
 
-    // Group dishes by restaurant
-    const grouped = results.reduce((acc, row) => {
-      if (!row.id) return acc; // edge case if left outer join has nulls
+
+       // Group dishes by restaurant
+   const grouped = results.reduce((acc, row) => {
+      if (!row.id) return acc; // safety for leftJoin edge cases
+
       let restaurant = acc.find((r) => r.id === row.id);
       if (!restaurant) {
         restaurant = {
           id: row.id,
           name: row.name,
-          address: row.address,
-          latitude: row.latitude,
-          longitude: row.longitude,
+          address: row.address ?? "",      
+          latitude: row.latitude ?? 0,   
+          longitude: row.longitude ?? 0,   
           dishes: [],
         };
         acc.push(restaurant);
       }
-      // Only add if dish exists
-      if (row.id != null && row.name != null && row.price != null) {
+
+      if (row.dishId != null) {
         restaurant.dishes.push({
-          dishId : row.dishId,
+          dishId: row.dishId,
           name: row.dishName,
           price: row.price,
         });
       }
+
       return acc;
     }, [] as RestaurantWithDishes[]);
+
+    // }, [] as RestaurantWithDishes[]);
 
     return res.status(200).json({
       message: "Restaurants and dishes",

@@ -3,8 +3,9 @@ import { AuthenticatedRequest } from "../../middleware/authMiddleware";
 import {  RestaurantBody, RestaurantResult } from "../../models/admin/admin";
 import { notifyRestaurantCreated } from "../../kafka/producer/producer";
 import { Kafka } from "kafkajs";
-import { createRestaurantService,checkRestaurantExists  } from "../../services/admin/adminService";
-import { restaurantSchema } from "../../validator/restaurant";
+import { createRestaurantService  } from "../../services/admin/adminService";
+import { restaurantSchema } from "../../validator/validator";
+import { checkRestaurantExists } from "../../services/address/address";
 const kafkaInit = new Kafka({clientId : 'rma-producer' , brokers: ['localhost:9092']})
 
 
@@ -23,9 +24,9 @@ export const createRestaurant = async (req: AuthenticatedRequest & Request, res:
     }
 
     // Destructure validated data
-    const { name, address, latitude, longitude } = parsedBody.data;
+    const { name } = parsedBody.data;
 
-    const existing = await checkRestaurantExists(name, address);
+    const existing = await checkRestaurantExists(name);
     if (existing) {
       return res.status(409).json({
         message: "A restaurant with this name and address already exists."
@@ -37,7 +38,7 @@ export const createRestaurant = async (req: AuthenticatedRequest & Request, res:
     }
 
     // Create restaurant and notify via Kafka
-    const result = await createRestaurantService(name, address, latitude, longitude, req.user.id);
+    const result = await createRestaurantService(name, req.user.id);
     await notifyRestaurantCreated(kafkaInit, result.name);
 
     // Return success
